@@ -3,15 +3,18 @@
     "listing": "/yap.html",
     "items": [
       "/posts/introductory/plain-sine.html",
-      "/posts/tooling/basic-img-bot.html"
+      "/posts/tooling/basic-img-bot.html",
+      "/posts/talks/2019-05-20-FOE19.html",
+      "/posts/talks/2022-10-26-SNEx.html",
+      "/posts/talks/2021-11-03-UTK.html"
     ]
   },
   {
     "listing": "/about.html",
     "items": [
-      "/talks/2019-05-20-FOE19.html",
-      "/talks/2022-10-26-SNEx.html",
-      "/talks/2021-11-03-UTK.html"
+      "/posts/talks/2019-05-20-FOE19.html",
+      "/posts/talks/2022-10-26-SNEx.html",
+      "/posts/talks/2021-11-03-UTK.html"
     ]
   }
 ]
