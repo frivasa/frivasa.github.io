@@ -1,0 +1,58 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Meatball Flag",
+    "section": "",
+    "text": "“Wheel’s falling off! We have to pit!”"
+  },
+  {
+    "objectID": "yap.html",
+    "href": "yap.html",
+    "title": "Pit Stops",
+    "section": "",
+    "text": "A plain sine-wave\n\n\n\n\n\n\n\n\nJun 4, 2025\n\n\nFernando Rivas\n\n\n\n\n\n\n\n\n\n\n\n\nBasic Image Recognition\n\n\n\n\n\n\n\n\nJun 4, 2025\n\n\nFernando Rivas\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "talks/2022-10-26-SNEx.html",
+    "href": "talks/2022-10-26-SNEx.html",
+    "title": "SNEx group meeting presentation",
+    "section": "",
+    "text": "An outline of my thesis work presented to the Supernovae Experiments (SNEx) group based at Technion\nMore information here\nSlides"
+  },
+  {
+    "objectID": "posts/introductory/plain-sine.html",
+    "href": "posts/introductory/plain-sine.html",
+    "title": "A plain sine-wave",
+    "section": "",
+    "text": "Wow! look at those curves!\n\nimport matplotlib.pyplot as plt\n\ndef plot_sine_wave():\n    import numpy as np\n    \n    x = np.linspace(0, 2*np.pi, 100)\n    y = np.sin(x)\n    \n    plt.figure(figsize=(8,6))\n    plt.plot(x, y, label='Sine Wave')\n    plt.xlabel('X Axis')\n    plt.ylabel('Y Axis')\n    plt.title('Plot of Sine Wave from -π to π')\n    plt.grid(True)\n    plt.legend()\n    plt.show()\n\nplot_sine_wave()"
+  },
+  {
+    "objectID": "posts/tooling/basic-img-bot.html",
+    "href": "posts/tooling/basic-img-bot.html",
+    "title": "Basic Image Recognition",
+    "section": "",
+    "text": "import tensorflow as tf\nfrom tensorflow.keras import datasets, layers, models\nimport matplotlib.pyplot as plt\n#  LOAD AND SPLIT DATASET\n(train_images, train_labels), (test_images, test_labels) = \\\n  datasets.cifar10.load_data()\n# Normalize pixel values to be between 0 and 1\ntrain_images, test_images = train_images / 255.0, test_images / 255.0\nclass_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',\n               'dog', 'frog', 'horse', 'ship', 'truck']\n# Let's look at a one image\nIMG_INDEX = 7  # change this to look at other images\nplt.imshow(train_images[IMG_INDEX] ,cmap=plt.cm.binary)\nplt.xlabel(class_names[train_labels[IMG_INDEX][0]])\nplt.show()\n\nmodel = models.Sequential()\n\n## CONVOLUTIONAL BASE\n# first layer receives 32,32,3 images. 32 filters of size 3x3 \nmodel.add(layers.Conv2D(32, (3, 3), activation='relu',\n                        input_shape=(32, 32, 3)))\n# second layer pools 2x2 with a stide of 2x2 (not specified defaults to pool)\nmodel.add(layers.MaxPooling2D((2, 2)))\n# further layers use more filters due to the pooling shrinking the images \n# allowing more depth\nmodel.add(layers.Conv2D(64, (3, 3), activation='relu'))\nmodel.add(layers.MaxPooling2D((2, 2)))\nmodel.add(layers.Conv2D(64, (3, 3), activation='relu'))\n# print(\"Num GPUs Available: \", len(tf.config.list_physical_devices('GPU')))\nmodel.summary()\nModel: \"sequential\"\n_________________________________________________________________\n Layer (type)                Output Shape              Param #   \n=================================================================\n conv2d (Conv2D)             (None, 30, 30, 32)        896       \n                                                                 \n max_pooling2d (MaxPooling2D  (None, 15, 15, 32)       0         \n )                                                               \n                                                                 \n conv2d_1 (Conv2D)           (None, 13, 13, 64)        18496     \n                                                                 \n max_pooling2d_1 (MaxPooling  (None, 6, 6, 64)         0         \n 2D)                                                             \n                                                                 \n conv2d_2 (Conv2D)           (None, 4, 4, 64)          36928     \n                                                                 \n=================================================================\nTotal params: 56,320\nTrainable params: 56,320\nNon-trainable params: 0\n_________________________________________________________________\n# flatten 4,4,64 to a single vector\nmodel.add(layers.Flatten())\n# feed it into a dense layer\nmodel.add(layers.Dense(64, activation='relu'))\n# do the 10 object classification\nmodel.add(layers.Dense(10))\nmodel.summary()\nModel: \"sequential\"\n_________________________________________________________________\n Layer (type)                Output Shape              Param #   \n=================================================================\n conv2d (Conv2D)             (None, 30, 30, 32)        896       \n                                                                 \n max_pooling2d (MaxPooling2D  (None, 15, 15, 32)       0         \n )                                                               \n                                                                 \n conv2d_1 (Conv2D)           (None, 13, 13, 64)        18496     \n                                                                 \n max_pooling2d_1 (MaxPooling  (None, 6, 6, 64)         0         \n 2D)                                                             \n                                                                 \n conv2d_2 (Conv2D)           (None, 4, 4, 64)          36928     \n                                                                 \n flatten (Flatten)           (None, 1024)              0         \n                                                                 \n dense (Dense)               (None, 64)                65600     \n                                                                 \n dense_1 (Dense)             (None, 10)                650       \n                                                                 \n=================================================================\nTotal params: 122,570\nTrainable params: 122,570\nNon-trainable params: 0\n_________________________________________________________________\n# Train!\nmodel.compile(optimizer='adam',\n              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),\n              metrics=['accuracy'])\n\nhistory = model.fit(train_images, train_labels, epochs=10, \n                    validation_data=(test_images, test_labels))\nEpoch 1/10\n1563/1563 [==============================] - 18s 4ms/step - loss: 1.4885 - accuracy: 0.4566 - val_loss: 1.1859 - val_accuracy: 0.5804\nEpoch 2/10\n1563/1563 [==============================] - 5s 3ms/step - loss: 1.1033 - accuracy: 0.6087 - val_loss: 0.9931 - val_accuracy: 0.6475\nEpoch 3/10\n1563/1563 [==============================] - 5s 3ms/step - loss: 0.9554 - accuracy: 0.6653 - val_loss: 0.9515 - val_accuracy: 0.6644\nEpoch 4/10\n1563/1563 [==============================] - 5s 3ms/step - loss: 0.8526 - accuracy: 0.7022 - val_loss: 0.9089 - val_accuracy: 0.6777\nEpoch 5/10\n1563/1563 [==============================] - 5s 4ms/step - loss: 0.7833 - accuracy: 0.7264 - val_loss: 0.8903 - val_accuracy: 0.6917\nEpoch 6/10\n1563/1563 [==============================] - 9s 6ms/step - loss: 0.7173 - accuracy: 0.7474 - val_loss: 0.8368 - val_accuracy: 0.7094\nEpoch 7/10\n1563/1563 [==============================] - 9s 6ms/step - loss: 0.6726 - accuracy: 0.7612 - val_loss: 0.8823 - val_accuracy: 0.6956\nEpoch 8/10\n1563/1563 [==============================] - 11s 7ms/step - loss: 0.6274 - accuracy: 0.7796 - val_loss: 0.8806 - val_accuracy: 0.6979\nEpoch 9/10\n1563/1563 [==============================] - 11s 7ms/step - loss: 0.5806 - accuracy: 0.7960 - val_loss: 0.9070 - val_accuracy: 0.6970\nEpoch 10/10\n1563/1563 [==============================] - 10s 6ms/step - loss: 0.5424 - accuracy: 0.8090 - val_loss: 0.8613 - val_accuracy: 0.7181\n# Test against pre-labeled data\ntest_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)\nprint(test_acc)\n# around 71% accuracy\n313/313 - 1s - loss: 0.8613 - accuracy: 0.7181 - 517ms/epoch - 2ms/step\n0.7181000113487244"
+  },
+  {
+    "objectID": "talks/2021-11-03-UTK.html",
+    "href": "talks/2021-11-03-UTK.html",
+    "title": "Supernovae Ia: Omens of the Past. Today’s Auguries",
+    "section": "",
+    "text": "Historical review of type Ia supernovae observation and it’s future prospects. Given to an undergraduate and graduate seminar course at UTK’s physics department.\nVenue information\nSlides"
+  },
+  {
+    "objectID": "talks/2019-05-20-FOE19.html",
+    "href": "talks/2019-05-20-FOE19.html",
+    "title": "Fifty-One Ergs Workshop 2019",
+    "section": "",
+    "text": "Poster presentation on the technology and reach of HPC simulations on Type Ia supernovae.\nMore information about the event here\nPoster"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "An Orange Flag is a banner flown only when cars are dangerously falling apart on track. This state is where the fixes outwit the challenges to keep those wheels rolling…\n\nHi there, I’m Fernando. I’m currently getting to grips with the vast world of managing data and how new GPU-enhanced technologies can improve astronomy in the future. I did my PhD in physics at the University of Tennessee where I wrangled enormous computers to blow up imaginary stars. You can find out more about me through my resume here or the Socials above (and below).\nI also did some teaching and outreach regarding these massive balls of fire, some of which you can see below:\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n      \n        Author\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\nDate\n\n\nTitle\n\n\nAuthor\n\n\n\n\n\n\nMay 20, 2019\n\n\nFifty-One Ergs Workshop 2019\n\n\nFernando Rivas\n\n\n\n\nOct 26, 2022\n\n\nSNEx group meeting presentation\n\n\nFernando Rivas\n\n\n\n\nOct 26, 2022\n\n\nSupernovae Ia: Omens of the Past. Today’s Auguries\n\n\nFernando Rivas\n\n\n\n\nNo matching items"
+  }
+]
